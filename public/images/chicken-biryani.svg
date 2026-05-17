@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+  <title id="title">Chicken biryani</title>
+  <desc id="desc">Chicken biryani with long rice and chicken pieces in a serving bowl.</desc>
+  <rect width="640" height="420" fill="#f6f0ea"/>
+  <circle cx="320" cy="218" r="168" fill="#342720"/>
+  <circle cx="320" cy="218" r="138" fill="#e1a04a"/>
+  <path d="M214 230c60-62 188-86 258-18-74 64-198 82-258 18Z" fill="#ffd98a"/>
+  <g fill="#8a5831">
+    <path d="M238 174c38-34 94-10 84 36-8 34-62 42-92 16-18-16-12-36 8-52Z"/>
+    <path d="M362 230c42-26 92 8 72 50-16 34-74 28-94-8-10-18 2-32 22-42Z"/>
+  </g>
+  <g fill="#fff0bf">
+    <rect x="246" y="240" width="86" height="10" rx="5" transform="rotate(-12 289 245)"/>
+    <rect x="340" y="178" width="76" height="10" rx="5" transform="rotate(14 378 183)"/>
+    <rect x="384" y="254" width="78" height="10" rx="5" transform="rotate(-8 423 259)"/>
+  </g>
+  <path d="M300 164c18 24 40 34 66 26" fill="none" stroke="#4f8a45" stroke-width="13" stroke-linecap="round"/>
+</svg>

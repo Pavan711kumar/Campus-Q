@@ -8,10 +8,10 @@ import { Card } from '../../components/ui/Card.jsx';
 const defaultImageUrl = '/images/paneer-wrap.svg';
 const fallbackImagesByName = {
   'veg biryani': '/images/veg-biryani.svg',
-  'mutton dum biryani': '/images/veg-biryani.svg',
-  meals: '/images/veg-biryani.svg',
-  tea: '/images/cold-coffee.svg',
-  'chicken biryani': '/images/veg-biryani.svg',
+  'mutton dum biryani': '/images/mutton-dum-biryani.svg',
+  meals: '/images/meals.svg',
+  tea: '/images/tea.svg',
+  'chicken biryani': '/images/chicken-biryani.svg',
   'cold coffee': '/images/cold-coffee.svg',
   'masala dosa': '/images/masala-dosa.svg'
 };

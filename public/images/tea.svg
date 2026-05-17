@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+  <title id="title">Tea</title>
+  <desc id="desc">A cup of hot milk tea on a saucer.</desc>
+  <rect width="640" height="420" fill="#fff4ec"/>
+  <ellipse cx="314" cy="308" rx="170" ry="34" fill="#ead9ce"/>
+  <path d="M204 158h214v92c0 54-44 98-98 98h-18c-54 0-98-44-98-98v-92Z" fill="#fff"/>
+  <ellipse cx="311" cy="158" rx="107" ry="32" fill="#f7f2ec"/>
+  <ellipse cx="311" cy="158" rx="82" ry="20" fill="#c98a55"/>
+  <path d="M414 194h28c34 0 48 48 18 68-12 8-28 9-46 2" fill="none" stroke="#fff" stroke-width="24" stroke-linecap="round"/>
+  <path d="M250 98c-20 20 20 26 0 48M312 82c-24 24 24 34 0 58M374 98c-20 20 20 26 0 48" fill="none" stroke="#c9a17e" stroke-width="10" stroke-linecap="round"/>
+</svg>
