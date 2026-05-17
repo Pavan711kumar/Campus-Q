@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+  <title id="title">Cold coffee</title>
+  <desc id="desc">A chilled glass of cold coffee with foam and a straw.</desc>
+  <rect width="640" height="420" fill="#eef5fb"/>
+  <path d="M256 110h150l-26 236H282L256 110Z" fill="#c78958"/>
+  <path d="M270 150h122l-20 174H290l-20-174Z" fill="#8c5438"/>
+  <ellipse cx="331" cy="110" rx="78" ry="24" fill="#f4dfc7"/>
+  <ellipse cx="331" cy="104" rx="62" ry="16" fill="#fff6e8"/>
+  <path d="M390 62 360 210" fill="none" stroke="#e15d4f" stroke-width="14" stroke-linecap="round"/>
+  <path d="M270 186h118M276 238h106" stroke="#d8a06c" stroke-width="10" stroke-linecap="round"/>
+  <ellipse cx="331" cy="346" rx="58" ry="14" fill="#6f422f"/>
+</svg>

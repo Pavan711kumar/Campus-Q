@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+  <title id="title">Veg biryani bowl</title>
+  <desc id="desc">A bowl of vegetable biryani with rice, peas, carrots, and herbs.</desc>
+  <rect width="640" height="420" fill="#fff7df"/>
+  <path d="M126 210c20-72 368-72 388 0 18 66-48 144-194 144s-212-78-194-144Z" fill="#f0b85a"/>
+  <ellipse cx="320" cy="210" rx="194" ry="66" fill="#fff0bd"/>
+  <path d="M164 210c40-44 270-56 336-4-38 38-298 50-336 4Z" fill="#f7d47b"/>
+  <g fill="#f9f1c5">
+    <rect x="210" y="178" width="58" height="10" rx="5" transform="rotate(-14 239 183)"/>
+    <rect x="286" y="194" width="74" height="10" rx="5" transform="rotate(12 323 199)"/>
+    <rect x="368" y="172" width="64" height="10" rx="5" transform="rotate(-8 400 177)"/>
+    <rect x="244" y="226" width="72" height="10" rx="5" transform="rotate(7 280 231)"/>
+  </g>
+  <circle cx="242" cy="198" r="11" fill="#58a05a"/>
+  <circle cx="380" cy="218" r="10" fill="#58a05a"/>
+  <circle cx="330" cy="176" r="9" fill="#e4693f"/>
+  <circle cx="430" cy="196" r="9" fill="#e4693f"/>
+  <path d="M146 244c76 72 270 88 348 0" fill="none" stroke="#c78035" stroke-width="12" stroke-linecap="round"/>
+</svg>

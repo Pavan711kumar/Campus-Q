@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { addDoc, collection, deleteDoc, doc, onSnapshot, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { db, storage, collections } from '../../lib/firebase.js';
@@ -7,11 +7,25 @@ import { formatCurrency } from '../../lib/utils.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { Card } from '../../components/ui/Card.jsx';
-import { Input } from '../../components/ui/Input.jsx';
+import { Input, Select } from '../../components/ui/Input.jsx';
 import { Badge } from '../../components/ui/Badge.jsx';
 import { useToast } from '../../components/ui/Toast.jsx';
 
 const initialForm = { name: '', price: '', prepTime: '', category: 'Snacks', imageUrl: '' };
+const defaultImageUrl = '/images/paneer-wrap.svg';
+const maxImageSize = 5 * 1024 * 1024;
+
+function safeFileName(fileName) {
+  return fileName.replace(/[^a-z0-9._-]/gi, '-').toLowerCase();
+}
+
+function uploadErrorMessage(error) {
+  if (error?.code === 'storage/unauthorized') {
+    return 'Upload blocked. Deploy Firebase Storage rules and make sure you are logged in as canteen owner.';
+  }
+
+  return error?.message || 'Could not add menu item. Please try again.';
+}
 
 export default function MenuManagementPage() {
   const { user, profile } = useAuth();
@@ -19,6 +33,7 @@ export default function MenuManagementPage() {
   const [form, setForm] = useState(initialForm);
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null);
   const { notify } = useToast();
 
   useEffect(() => {
@@ -30,30 +45,49 @@ export default function MenuManagementPage() {
   async function addItem(event) {
     event.preventDefault();
     setLoading(true);
-    let imageUrl = form.imageUrl || '/images/burger.png';
 
-    if (file) {
-      const fileRef = ref(storage, `menuItems/${Date.now()}-${file.name}`);
-      await uploadBytes(fileRef, file);
-      imageUrl = await getDownloadURL(fileRef);
+    try {
+      if (!user) {
+        throw new Error('Please log in before adding menu items.');
+      }
+
+      let imageUrl = form.imageUrl.trim() || defaultImageUrl;
+
+      if (file) {
+        if (!file.type.startsWith('image/')) {
+          throw new Error('Please choose a valid image file.');
+        }
+
+        if (file.size > maxImageSize) {
+          throw new Error('Image must be smaller than 5 MB.');
+        }
+
+        const fileRef = ref(storage, `menuItems/${user.uid}/${Date.now()}-${safeFileName(file.name)}`);
+        await uploadBytes(fileRef, file, { contentType: file.type });
+        imageUrl = await getDownloadURL(fileRef);
+      }
+
+      await addDoc(collection(db, collections.menuItems), {
+        name: form.name.trim(),
+        price: Number(form.price),
+        prepTime: Number(form.prepTime),
+        category: form.category,
+        imageUrl,
+        available: true,
+        canteenId: user.uid,
+        canteenName: profile?.name || 'Campus Canteen',
+        createdAt: serverTimestamp()
+      });
+
+      setForm(initialForm);
+      setFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      notify('Menu item added');
+    } catch (error) {
+      notify(uploadErrorMessage(error), 'error');
+    } finally {
+      setLoading(false);
     }
-
-    await addDoc(collection(db, collections.menuItems), {
-      name: form.name,
-      price: Number(form.price),
-      prepTime: Number(form.prepTime),
-      category: form.category,
-      imageUrl,
-      available: true,
-      canteenId: user.uid,
-      canteenName: profile?.name || 'Campus Canteen',
-      createdAt: serverTimestamp()
-    });
-
-    setForm(initialForm);
-    setFile(null);
-    setLoading(false);
-    notify('Menu item added');
   }
 
   async function seedSampleData() {
@@ -70,8 +104,14 @@ export default function MenuManagementPage() {
           <Input placeholder="Item name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
           <Input type="number" placeholder="Price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required />
           <Input type="number" placeholder="Prep time in minutes" value={form.prepTime} onChange={(e) => setForm({ ...form, prepTime: e.target.value })} required />
+          <Select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+            <option value="Snacks">Snacks</option>
+            <option value="Breakfast">Breakfast</option>
+            <option value="Meals">Meals</option>
+            <option value="Beverages">Beverages</option>
+          </Select>
           <Input placeholder="Image URL optional" value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} />
-          <Input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0])} />
+          <Input ref={fileInputRef} type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
           <Button className="w-full" disabled={loading}>{loading ? 'Saving...' : 'Add item'}</Button>
           <Button className="w-full" type="button" variant="outline" onClick={seedSampleData}>Add sample test data</Button>
         </form>
@@ -81,7 +121,7 @@ export default function MenuManagementPage() {
         {items.map((item) => (
           <Card key={item.id}>
             <div className="flex gap-4">
-              <img src={item.imageUrl || '/images/burger.png'} alt={item.name} className="h-24 w-24 rounded-xl object-cover" />
+              <img src={item.imageUrl || defaultImageUrl} alt={item.name} onError={(event) => { event.currentTarget.src = defaultImageUrl; }} className="h-24 w-24 rounded-xl object-cover" />
               <div className="flex-1">
                 <div className="flex items-start justify-between gap-2">
                   <h2 className="font-black">{item.name}</h2>

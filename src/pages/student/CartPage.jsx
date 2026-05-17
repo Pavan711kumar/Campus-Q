@@ -5,6 +5,8 @@ import { formatCurrency } from '../../lib/utils.js';
 import { Button } from '../../components/ui/Button.jsx';
 import { Card } from '../../components/ui/Card.jsx';
 
+const defaultImageUrl = '/images/paneer-wrap.svg';
+
 export default function CartPage() {
   const { items, addItem, decreaseItem, removeItem, total } = useCart();
   const navigate = useNavigate();
@@ -25,7 +27,7 @@ export default function CartPage() {
         <h1 className="text-4xl font-black">Cart</h1>
         {items.map((item) => (
           <Card key={item.id} className="flex items-center gap-4">
-            <img src={item.imageUrl || '/images/burger.png'} alt={item.name} className="h-20 w-20 rounded-xl object-cover" />
+            <img src={item.imageUrl || defaultImageUrl} alt={item.name} onError={(event) => { event.currentTarget.src = defaultImageUrl; }} className="h-20 w-20 rounded-xl object-cover" />
             <div className="flex-1">
               <h3 className="font-black">{item.name}</h3>
               <p className="text-sm text-stone-500">{formatCurrency(item.price)} each</p>

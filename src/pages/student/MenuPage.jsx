@@ -10,6 +10,8 @@ import { Badge } from '../../components/ui/Badge.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { useToast } from '../../components/ui/Toast.jsx';
 
+const defaultImageUrl = '/images/paneer-wrap.svg';
+
 export default function MenuPage() {
   const [items, setItems] = useState(sampleMenuItems.map((item, index) => ({ id: `sample-${index}`, ...item })));
   const { addItem } = useCart();
@@ -31,7 +33,7 @@ export default function MenuPage() {
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {items.map((item) => (
           <Card key={item.id} className="flex flex-col">
-            <img src={item.imageUrl || '/images/burger.png'} alt={item.name} className="h-40 w-full rounded-xl object-cover" />
+            <img src={item.imageUrl || defaultImageUrl} alt={item.name} onError={(event) => { event.currentTarget.src = defaultImageUrl; }} className="h-40 w-full rounded-xl object-cover" />
             <div className="mt-4 flex flex-1 flex-col">
               <div className="flex items-start justify-between gap-3">
                 <div>

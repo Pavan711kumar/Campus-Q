@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+  <title id="title">Paneer wrap</title>
+  <desc id="desc">A toasted paneer wrap with greens and paneer filling.</desc>
+  <rect width="640" height="420" fill="#f8efe0"/>
+  <circle cx="520" cy="90" r="74" fill="#f6c453"/>
+  <path d="M88 278c64-110 200-176 358-160 58 6 106 28 120 58 18 38-20 84-96 116-128 54-308 52-382-14Z" fill="#d6a15f"/>
+  <path d="M120 262c66-74 188-116 316-104 44 4 82 18 94 38 12 22-18 50-76 70-116 40-268 38-334-4Z" fill="#f6dfb7"/>
+  <path d="M178 226c76 22 158 24 246 8" fill="none" stroke="#78a85d" stroke-width="18" stroke-linecap="round"/>
+  <path d="M218 246c40 14 104 18 166 8" fill="none" stroke="#de6f43" stroke-width="16" stroke-linecap="round"/>
+  <rect x="274" y="176" width="56" height="40" rx="8" fill="#fff3c4"/>
+  <rect x="344" y="184" width="58" height="38" rx="8" fill="#fff3c4"/>
+  <path d="M102 290c92 52 262 62 408 14" fill="none" stroke="#a96b35" stroke-width="12" stroke-linecap="round"/>
+</svg>
