@@ -6,6 +6,19 @@ import { Button } from '../../components/ui/Button.jsx';
 import { Card } from '../../components/ui/Card.jsx';
 
 const defaultImageUrl = '/images/paneer-wrap.svg';
+const fallbackImagesByName = {
+  'veg biryani': '/images/veg-biryani.svg',
+  'mutton dum biryani': '/images/veg-biryani.svg',
+  meals: '/images/veg-biryani.svg',
+  tea: '/images/cold-coffee.svg',
+  'chicken biryani': '/images/veg-biryani.svg',
+  'cold coffee': '/images/cold-coffee.svg',
+  'masala dosa': '/images/masala-dosa.svg'
+};
+
+function fallbackImageFor(item) {
+  return fallbackImagesByName[item.name?.toLowerCase()] || defaultImageUrl;
+}
 
 export default function CartPage() {
   const { items, addItem, decreaseItem, removeItem, total } = useCart();
@@ -27,7 +40,7 @@ export default function CartPage() {
         <h1 className="text-4xl font-black">Cart</h1>
         {items.map((item) => (
           <Card key={item.id} className="flex items-center gap-4">
-            <img src={item.imageUrl || defaultImageUrl} alt={item.name} onError={(event) => { event.currentTarget.src = defaultImageUrl; }} className="h-20 w-20 rounded-xl object-cover" />
+            <img src={item.imageUrl || fallbackImageFor(item)} alt={item.name} onError={(event) => { event.currentTarget.src = fallbackImageFor(item); }} className="h-20 w-20 rounded-xl object-cover" />
             <div className="flex-1">
               <h3 className="font-black">{item.name}</h3>
               <p className="text-sm text-stone-500">{formatCurrency(item.price)} each</p>

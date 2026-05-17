@@ -14,6 +14,19 @@ import { useToast } from '../../components/ui/Toast.jsx';
 const initialForm = { name: '', price: '', prepTime: '', category: 'Snacks', imageUrl: '' };
 const defaultImageUrl = '/images/paneer-wrap.svg';
 const maxImageSize = 5 * 1024 * 1024;
+const fallbackImagesByName = {
+  'veg biryani': '/images/veg-biryani.svg',
+  'mutton dum biryani': '/images/veg-biryani.svg',
+  meals: '/images/veg-biryani.svg',
+  tea: '/images/cold-coffee.svg',
+  'chicken biryani': '/images/veg-biryani.svg',
+  'cold coffee': '/images/cold-coffee.svg',
+  'masala dosa': '/images/masala-dosa.svg'
+};
+
+function fallbackImageFor(item) {
+  return fallbackImagesByName[item.name?.toLowerCase()] || defaultImageUrl;
+}
 
 function safeFileName(fileName) {
   return fileName.replace(/[^a-z0-9._-]/gi, '-').toLowerCase();
@@ -121,7 +134,7 @@ export default function MenuManagementPage() {
         {items.map((item) => (
           <Card key={item.id}>
             <div className="flex gap-4">
-              <img src={item.imageUrl || defaultImageUrl} alt={item.name} onError={(event) => { event.currentTarget.src = defaultImageUrl; }} className="h-24 w-24 rounded-xl object-cover" />
+              <img src={item.imageUrl || fallbackImageFor(item)} alt={item.name} onError={(event) => { event.currentTarget.src = fallbackImageFor(item); }} className="h-24 w-24 rounded-xl object-cover" />
               <div className="flex-1">
                 <div className="flex items-start justify-between gap-2">
                   <h2 className="font-black">{item.name}</h2>
