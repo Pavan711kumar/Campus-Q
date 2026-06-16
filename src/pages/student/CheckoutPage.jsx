@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { CheckCircle2 } from 'lucide-react';
-import { db, collections } from '../../lib/firebase.js';
+import api from '../../lib/api.js';
 import { payWithRazorpay } from '../../lib/razorpay.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useCart } from '../../context/CartContext.jsx';
@@ -35,7 +34,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    await addDoc(collection(db, collections.orders), {
+    await api.post('/orders', {
       studentId: user.uid,
       studentName: profile?.name || user.email,
       studentEmail: user.email,
@@ -48,7 +47,7 @@ export default function CheckoutPage() {
       paymentId: payment.paymentId,
       paymentMode: payment.mode,
       total,
-      createdAt: serverTimestamp(),
+      createdAt: new Date().toISOString(),
       timestamp: Date.now()
     });
 

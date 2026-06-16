@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { collection, doc, onSnapshot, orderBy, query, updateDoc } from 'firebase/firestore';
-import { db, collections } from '../../lib/firebase.js';
+import api from '../../lib/api.js';
 import { formatCurrency } from '../../lib/utils.js';
 import { Button } from '../../components/ui/Button.jsx';
 import { Card } from '../../components/ui/Card.jsx';
@@ -19,13 +18,24 @@ export default function IncomingOrdersPage() {
   const { notify } = useToast();
 
   useEffect(() => {
-    const q = query(collection(db, collections.orders), orderBy('timestamp', 'desc'));
-    return onSnapshot(q, (snapshot) => setOrders(snapshot.docs.map((item) => ({ id: item.id, ...item.data() }))));
+    let isMounted = true;
+    api.get('/orders').then(res => {
+      if (!isMounted) return;
+      const rows = res.data;
+      rows.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+      setOrders(rows);
+    }).catch(console.error);
+    return () => { isMounted = false; };
   }, []);
 
   async function updateStatus(orderId, status) {
-    await updateDoc(doc(db, collections.orders, orderId), { status, updatedAt: Date.now() });
-    notify(`Order marked ${status}`);
+    try {
+      await api.put(`/orders/${orderId}`, { status, updatedAt: Date.now() });
+      setOrders(orders.map(o => o.id === orderId ? { ...o, status, updatedAt: Date.now() } : o));
+      notify(`Order marked ${status}`);
+    } catch (e) {
+      notify('Failed to update order', 'error');
+    }
   }
 
   return (

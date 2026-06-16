@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { auth, collections, db } from '../lib/firebase.js';
+import { auth } from '../lib/firebase.js';
+import api from '../lib/api.js';
 
 const AuthContext = createContext(null);
 
@@ -21,13 +21,27 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    if (!user) return undefined;
+    if (!user) return;
 
+    let isMounted = true;
     setLoading(true);
-    return onSnapshot(doc(db, collections.users, user.uid), (snapshot) => {
-      setProfile(snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null);
-      setLoading(false);
-    }, () => setLoading(false));
+
+    api.get(`/users/${user.uid}`)
+      .then(response => {
+        if (isMounted) {
+          setProfile(response.data);
+          setLoading(false);
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching user profile", error);
+        if (isMounted) {
+          setProfile(null);
+          setLoading(false);
+        }
+      });
+
+    return () => { isMounted = false; };
   }, [user]);
 
   const value = useMemo(() => ({ user, profile, loading }), [user, profile, loading]);

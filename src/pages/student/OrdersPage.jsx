@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
-import { db, collections } from '../../lib/firebase.js';
+import api from '../../lib/api.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { formatCurrency } from '../../lib/utils.js';
 import { Card } from '../../components/ui/Card.jsx';
@@ -12,13 +11,19 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    if (!user) return undefined;
-    const q = query(collection(db, collections.orders), where('studentId', '==', user.uid));
-    return onSnapshot(q, (snapshot) => {
-      const rows = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      rows.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-      setOrders(rows);
-    });
+    if (!user) return;
+    
+    let isMounted = true;
+    api.get('/orders', { params: { studentId: user.uid } })
+      .then(res => {
+        if (!isMounted) return;
+        const rows = res.data;
+        rows.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        setOrders(rows);
+      })
+      .catch(err => console.error('Failed to fetch orders:', err));
+
+    return () => { isMounted = false; };
   }, [user]);
 
   return (

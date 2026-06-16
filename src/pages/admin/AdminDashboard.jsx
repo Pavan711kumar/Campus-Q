@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { collection, doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { ShieldCheck, ShoppingBag, Store, UsersRound } from 'lucide-react';
-import { db, collections } from '../../lib/firebase.js';
+import api from '../../lib/api.js';
 import { Button } from '../../components/ui/Button.jsx';
 import { Card } from '../../components/ui/Card.jsx';
 import { Badge } from '../../components/ui/Badge.jsx';
@@ -14,12 +13,17 @@ export default function AdminDashboard() {
   const { notify } = useToast();
 
   useEffect(() => {
-    const unsubUsers = onSnapshot(collection(db, collections.users), (snapshot) => setUsers(snapshot.docs.map((item) => ({ id: item.id, ...item.data() }))));
-    const unsubOrders = onSnapshot(collection(db, collections.orders), (snapshot) => setOrders(snapshot.docs.map((item) => ({ id: item.id, ...item.data() }))));
-    return () => {
-      unsubUsers();
-      unsubOrders();
-    };
+    let isMounted = true;
+    
+    api.get('/users').then(res => {
+      if (isMounted) setUsers(res.data);
+    }).catch(console.error);
+    
+    api.get('/orders').then(res => {
+      if (isMounted) setOrders(res.data);
+    }).catch(console.error);
+
+    return () => { isMounted = false; };
   }, []);
 
   const stats = useMemo(() => ({
@@ -30,8 +34,13 @@ export default function AdminDashboard() {
   }), [users, orders]);
 
   async function toggleUser(user) {
-    await updateDoc(doc(db, collections.users, user.id), { disabled: !user.disabled });
-    notify(user.disabled ? 'User enabled' : 'User disabled');
+    try {
+      await api.put(`/users/${user.id}`, { disabled: !user.disabled });
+      setUsers(users.map(u => u.id === user.id ? { ...u, disabled: !user.disabled } : u));
+      notify(user.disabled ? 'User enabled' : 'User disabled');
+    } catch (e) {
+      notify('Failed to update user', 'error');
+    }
   }
 
   return (

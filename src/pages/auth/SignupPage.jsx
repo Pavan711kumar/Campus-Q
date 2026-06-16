@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { auth, collections, db } from '../../lib/firebase.js';
+import { auth } from '../../lib/firebase.js';
+import api from '../../lib/api.js';
 import { Button } from '../../components/ui/Button.jsx';
 import { Card } from '../../components/ui/Card.jsx';
 import { Input, Select } from '../../components/ui/Input.jsx';
@@ -24,17 +24,18 @@ export default function SignupPage() {
       const displayName = role === 'canteen' ? form.canteenName : form.name;
       await updateProfile(credential.user, { displayName });
 
-      await setDoc(doc(db, collections.users, credential.user.uid), {
+      await api.post(`/users/${credential.user.uid}`, {
         name: displayName,
         email: form.email,
         rollNumber: role === 'student' ? form.rollNumber : '',
         role,
         disabled: false,
-        createdAt: serverTimestamp()
+        createdAt: new Date().toISOString()
       });
 
       if (role === 'canteen') {
-        await setDoc(doc(db, collections.canteens, credential.user.uid), {
+        await api.post('/canteens', {
+          id: credential.user.uid,
           name: form.canteenName,
           ownerId: credential.user.uid,
           email: form.email,
@@ -42,7 +43,7 @@ export default function SignupPage() {
           waitTime: 10,
           liveOrders: 0,
           location: 'Campus Block',
-          createdAt: serverTimestamp()
+          createdAt: new Date().toISOString()
         });
       }
 

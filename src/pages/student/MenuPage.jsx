@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { collection, onSnapshot } from 'firebase/firestore';
 import { Clock3, Plus } from 'lucide-react';
-import { db, collections } from '../../lib/firebase.js';
+import api from '../../lib/api.js';
 import { sampleMenuItems } from '../../data/sampleData.js';
 import { formatCurrency } from '../../lib/utils.js';
 import { useCart } from '../../context/CartContext.jsx';
@@ -10,15 +9,15 @@ import { Badge } from '../../components/ui/Badge.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { useToast } from '../../components/ui/Toast.jsx';
 
-const defaultImageUrl = '/images/paneer-wrap.svg';
+const defaultImageUrl = '/images/paneer-wrap.png';
 const fallbackImagesByName = {
-  'veg biryani': '/images/veg-biryani.svg',
-  'mutton dum biryani': '/images/mutton-dum-biryani.svg',
-  meals: '/images/meals.svg',
-  tea: '/images/tea.svg',
-  'chicken biryani': '/images/chicken-biryani.svg',
-  'cold coffee': '/images/cold-coffee.svg',
-  'masala dosa': '/images/masala-dosa.svg'
+  'veg biryani': '/images/veg-biryani.png',
+  'mutton dum biryani': '/images/mutton-dum-biryani.png',
+  meals: '/images/meals.png',
+  tea: '/images/tea.png',
+  'chicken biryani': '/images/chicken-biryani.png',
+  'cold coffee': '/images/cold-coffee.png',
+  'masala dosa': '/images/masala-dosa.png'
 };
 
 function fallbackImageFor(item) {
@@ -31,10 +30,14 @@ export default function MenuPage() {
   const { notify } = useToast();
 
   useEffect(() => {
-    return onSnapshot(collection(db, collections.menuItems), (snapshot) => {
-      const rows = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      if (rows.length) setItems(rows);
-    });
+    let isMounted = true;
+    api.get('/menuItems')
+      .then(res => {
+        if (isMounted && res.data.length) setItems(res.data);
+      })
+      .catch(err => console.error('Failed to fetch menu items:', err));
+      
+    return () => { isMounted = false; };
   }, []);
 
   return (

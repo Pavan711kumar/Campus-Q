@@ -1,7 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 import { getAuth } from 'firebase/auth';
-import { initializeFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -16,17 +15,9 @@ const firebaseConfig = {
 
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = initializeFirestore(app, {
-  experimentalAutoDetectLongPolling: true
-});
 export const storage = getStorage(app);
 export const analyticsPromise = isSupported()
   .then((supported) => supported ? getAnalytics(app) : null)
   .catch(() => null);
 
-export const collections = {
-  users: 'users',
-  canteens: 'canteens',
-  menuItems: 'menuItems',
-  orders: 'orders'
-};
+// Removed firestore collections definitions as they are now handled by the backend

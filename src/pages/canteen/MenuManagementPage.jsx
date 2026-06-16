@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { addDoc, collection, deleteDoc, doc, onSnapshot, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { db, storage, collections } from '../../lib/firebase.js';
+import { storage } from '../../lib/firebase.js';
+import api from '../../lib/api.js';
 import { sampleCanteens, sampleMenuItems } from '../../data/sampleData.js';
 import { formatCurrency } from '../../lib/utils.js';
 import { useAuth } from '../../context/AuthContext.jsx';
@@ -12,16 +12,16 @@ import { Badge } from '../../components/ui/Badge.jsx';
 import { useToast } from '../../components/ui/Toast.jsx';
 
 const initialForm = { name: '', price: '', prepTime: '', category: 'Snacks', imageUrl: '' };
-const defaultImageUrl = '/images/paneer-wrap.svg';
+const defaultImageUrl = '/images/paneer-wrap.png';
 const maxImageSize = 5 * 1024 * 1024;
 const fallbackImagesByName = {
-  'veg biryani': '/images/veg-biryani.svg',
-  'mutton dum biryani': '/images/mutton-dum-biryani.svg',
-  meals: '/images/meals.svg',
-  tea: '/images/tea.svg',
-  'chicken biryani': '/images/chicken-biryani.svg',
-  'cold coffee': '/images/cold-coffee.svg',
-  'masala dosa': '/images/masala-dosa.svg'
+  'veg biryani': '/images/veg-biryani.png',
+  'mutton dum biryani': '/images/mutton-dum-biryani.png',
+  meals: '/images/meals.png',
+  tea: '/images/tea.png',
+  'chicken biryani': '/images/chicken-biryani.png',
+  'cold coffee': '/images/cold-coffee.png',
+  'masala dosa': '/images/masala-dosa.png'
 };
 
 function fallbackImageFor(item) {
@@ -49,10 +49,12 @@ export default function MenuManagementPage() {
   const fileInputRef = useRef(null);
   const { notify } = useToast();
 
+  const fetchItems = () => {
+    api.get('/menuItems').then(res => setItems(res.data)).catch(console.error);
+  };
+
   useEffect(() => {
-    return onSnapshot(collection(db, collections.menuItems), (snapshot) => {
-      setItems(snapshot.docs.map((item) => ({ id: item.id, ...item.data() })));
-    });
+    fetchItems();
   }, []);
 
   async function addItem(event) {
@@ -80,7 +82,7 @@ export default function MenuManagementPage() {
         imageUrl = await getDownloadURL(fileRef);
       }
 
-      await addDoc(collection(db, collections.menuItems), {
+      const newItemData = {
         name: form.name.trim(),
         price: Number(form.price),
         prepTime: Number(form.prepTime),
@@ -89,8 +91,11 @@ export default function MenuManagementPage() {
         available: true,
         canteenId: user.uid,
         canteenName: profile?.name || 'Campus Canteen',
-        createdAt: serverTimestamp()
-      });
+        createdAt: new Date().toISOString()
+      };
+
+      const res = await api.post('/menuItems', newItemData);
+      setItems([...items, { id: res.data.id, ...newItemData }]);
 
       setForm(initialForm);
       setFile(null);
@@ -104,8 +109,9 @@ export default function MenuManagementPage() {
   }
 
   async function seedSampleData() {
-    await Promise.all(sampleCanteens.map((canteen) => addDoc(collection(db, collections.canteens), canteen)));
-    await Promise.all(sampleMenuItems.map((item) => addDoc(collection(db, collections.menuItems), { ...item, createdAt: serverTimestamp() })));
+    await Promise.all(sampleCanteens.map((canteen) => api.post('/canteens', canteen)));
+    await Promise.all(sampleMenuItems.map((item) => api.post('/menuItems', { ...item, createdAt: new Date().toISOString() })));
+    fetchItems();
     notify('Sample canteens and menu added');
   }
 
@@ -142,10 +148,16 @@ export default function MenuManagementPage() {
                 </div>
                 <p className="text-sm text-stone-500">{formatCurrency(item.price)} | {item.prepTime} min</p>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <Button size="sm" variant="outline" onClick={() => updateDoc(doc(db, collections.menuItems, item.id), { available: !item.available })}>
+                  <Button size="sm" variant="outline" onClick={async () => {
+                    await api.put(`/menuItems/${item.id}`, { available: !item.available });
+                    setItems(items.map(i => i.id === item.id ? { ...i, available: !i.available } : i));
+                  }}>
                     {item.available ? 'Mark unavailable' : 'Mark available'}
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => deleteDoc(doc(db, collections.menuItems, item.id))}>Remove</Button>
+                  <Button size="sm" variant="ghost" onClick={async () => {
+                    await api.delete(`/menuItems/${item.id}`);
+                    setItems(items.filter(i => i.id !== item.id));
+                  }}>Remove</Button>
                 </div>
               </div>
             </div>

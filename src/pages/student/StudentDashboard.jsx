@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { Clock3, Store, TimerReset, Utensils } from 'lucide-react';
-import { db, collections } from '../../lib/firebase.js';
+import api from '../../lib/api.js';
 import { sampleCanteens, sampleMenuItems } from '../../data/sampleData.js';
 import { estimatedWaitTime } from '../../lib/utils.js';
 import { Button } from '../../components/ui/Button.jsx';
@@ -30,17 +29,20 @@ export default function StudentDashboard() {
   const [activeOrders, setActiveOrders] = useState(0);
 
   useEffect(() => {
-    const unsubCanteens = onSnapshot(collection(db, collections.canteens), (snapshot) => {
-      const rows = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      if (rows.length) setCanteens(rows);
-    });
-    const unsubOrders = onSnapshot(query(collection(db, collections.orders), where('status', 'in', ['placed', 'accepted', 'preparing', 'ready'])), (snapshot) => {
-      setActiveOrders(snapshot.size);
-    });
-    return () => {
-      unsubCanteens();
-      unsubOrders();
-    };
+    let isMounted = true;
+    
+    api.get('/canteens').then(res => {
+      if (isMounted && res.data.length) setCanteens(res.data);
+    }).catch(console.error);
+
+    api.get('/orders').then(res => {
+      if (!isMounted) return;
+      const activeStatuses = ['placed', 'accepted', 'preparing', 'ready'];
+      const activeCount = res.data.filter(o => activeStatuses.includes(o.status)).length;
+      setActiveOrders(activeCount);
+    }).catch(console.error);
+
+    return () => { isMounted = false; };
   }, []);
 
   return (

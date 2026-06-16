@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { CheckCircle2, Clock3, Flame, ShoppingBag } from 'lucide-react';
-import { db, collections } from '../../lib/firebase.js';
+import api from '../../lib/api.js';
 import { MetricCard } from '../../components/MetricCard.jsx';
 import { Card } from '../../components/ui/Card.jsx';
 
@@ -9,8 +8,16 @@ export default function CanteenDashboard() {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    const q = query(collection(db, collections.orders), where('status', 'in', ['placed', 'accepted', 'preparing', 'ready', 'completed']));
-    return onSnapshot(q, (snapshot) => setOrders(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))));
+    let isMounted = true;
+    // Note: If a canteen logs in, we should ideally fetch only their orders.
+    // For now, mirroring the original logic which fetches globally/filtered by status.
+    api.get('/orders').then(res => {
+      if (!isMounted) return;
+      const validStatuses = ['placed', 'accepted', 'preparing', 'ready', 'completed'];
+      setOrders(res.data.filter(o => validStatuses.includes(o.status)));
+    }).catch(console.error);
+    
+    return () => { isMounted = false; };
   }, []);
 
   const stats = useMemo(() => ({
