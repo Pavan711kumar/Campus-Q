@@ -24,7 +24,22 @@ export default function IncomingOrdersPage() {
       const rows = res.data;
       rows.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
       setOrders(rows);
-    }).catch(console.error);
+    }).catch(async err => {
+      console.error('API failed, trying Firestore:', err);
+      try {
+        const { getFirestore, collection, getDocs } = await import('firebase/firestore');
+        const { app } = await import('../../lib/firebase.js');
+        const db = getFirestore(app);
+        const snapshot = await getDocs(collection(db, 'orders'));
+        const rows = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        if (isMounted) {
+          rows.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+          setOrders(rows);
+        }
+      } catch (fbErr) {
+        console.error('Firestore fallback failed:', fbErr);
+      }
+    });
     return () => { isMounted = false; };
   }, []);
 
@@ -34,7 +49,17 @@ export default function IncomingOrdersPage() {
       setOrders(orders.map(o => o.id === orderId ? { ...o, status, updatedAt: Date.now() } : o));
       notify(`Order marked ${status}`);
     } catch (e) {
-      notify('Failed to update order', 'error');
+      console.error('API failed, trying Firestore:', e);
+      try {
+        const { getFirestore, doc, updateDoc } = await import('firebase/firestore');
+        const { app } = await import('../../lib/firebase.js');
+        const db = getFirestore(app);
+        await updateDoc(doc(db, 'orders', orderId), { status, updatedAt: Date.now() });
+        setOrders(orders.map(o => o.id === orderId ? { ...o, status, updatedAt: Date.now() } : o));
+        notify(`Order marked ${status}`);
+      } catch (fbErr) {
+        notify('Failed to update order', 'error');
+      }
     }
   }
 

@@ -40,7 +40,22 @@ export default function StudentDashboard() {
       const activeStatuses = ['placed', 'accepted', 'preparing', 'ready'];
       const activeCount = res.data.filter(o => activeStatuses.includes(o.status)).length;
       setActiveOrders(activeCount);
-    }).catch(console.error);
+    }).catch(async err => {
+      console.error('API failed, trying Firestore for orders count:', err);
+      try {
+        const { getFirestore, collection, getDocs } = await import('firebase/firestore');
+        const { app } = await import('../../lib/firebase.js');
+        const db = getFirestore(app);
+        const snapshot = await getDocs(collection(db, 'orders'));
+        if (!isMounted) return;
+        const rows = snapshot.docs.map(doc => doc.data());
+        const activeStatuses = ['placed', 'accepted', 'preparing', 'ready'];
+        const activeCount = rows.filter(o => activeStatuses.includes(o.status)).length;
+        setActiveOrders(activeCount);
+      } catch (fbErr) {
+        console.error('Firestore fallback failed:', fbErr);
+      }
+    });
 
     return () => { isMounted = false; };
   }, []);

@@ -21,7 +21,23 @@ export default function OrdersPage() {
         rows.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
         setOrders(rows);
       })
-      .catch(err => console.error('Failed to fetch orders:', err));
+      .catch(async err => {
+        console.error('API failed, trying Firestore for orders:', err);
+        try {
+          const { getFirestore, collection, query, where, getDocs } = await import('firebase/firestore');
+          const { app } = await import('../../lib/firebase.js');
+          const db = getFirestore(app);
+          const q = query(collection(db, 'orders'), where('studentId', '==', user.uid));
+          const snapshot = await getDocs(q);
+          const rows = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          if (isMounted) {
+            rows.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            setOrders(rows);
+          }
+        } catch (fbErr) {
+          console.error('Firestore fallback failed:', fbErr);
+        }
+      });
 
     return () => { isMounted = false; };
   }, [user]);
