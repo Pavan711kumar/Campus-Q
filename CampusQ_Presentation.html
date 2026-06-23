@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>CampusQ - Presentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/dracula.min.css">
+    <style>
+        .reveal h1, .reveal h2, .reveal h3 {
+            text-transform: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .reveal ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .reveal li {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+        .highlight {
+            color: #ff79c6;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Title -->
+            <section data-transition="zoom" data-auto-animate>
+                <h1>Campus<span class="highlight">Q</span></h1>
+                <h3>Smart Campus Queue Optimization</h3>
+                <p>Canteen Pre-Ordering System</p>
+            </section>
+
+            <!-- Slide 2: The Problem -->
+            <section data-transition="slide" data-auto-animate>
+                <h2>The <span class="highlight">Problem</span></h2>
+                <ul>
+                    <li class="fragment fade-up">⏳ Long waiting times in college canteens</li>
+                    <li class="fragment fade-up">🏃 Students rushing between classes</li>
+                    <li class="fragment fade-up">💵 Cash handling issues & order confusion</li>
+                </ul>
+            </section>
+
+            <!-- Slide 3: The Solution -->
+            <section data-transition="slide" data-auto-animate>
+                <h2>Our <span class="highlight">Solution</span></h2>
+                <ul>
+                    <li class="fragment fade-right">📱 Pre-order food from anywhere on campus</li>
+                    <li class="fragment fade-right">🕒 Choose a specific pickup time</li>
+                    <li class="fragment fade-right">💳 Pay online securely</li>
+                    <li class="fragment fade-right">🚀 Skip the line entirely!</li>
+                </ul>
+            </section>
+
+            <!-- Slide 4: How it works (Students) -->
+            <section data-transition="convex" data-auto-animate>
+                <h2>How it Works <span class="highlight">(Students)</span></h2>
+                <ul>
+                    <li class="fragment zoom-in"><strong>1. Browse Menu:</strong> View available items on your phone.</li>
+                    <li class="fragment zoom-in"><strong>2. Add to Cart:</strong> Select what you want to eat.</li>
+                    <li class="fragment zoom-in"><strong>3. Pay Online:</strong> Quick and secure checkout.</li>
+                    <li class="fragment zoom-in"><strong>4. Pick Up:</strong> Grab your food at the chosen time.</li>
+                </ul>
+            </section>
+
+            <!-- Slide 5: How it works (Canteens) -->
+            <section data-transition="convex" data-auto-animate>
+                <h2>How it Works <span class="highlight">(Canteen)</span></h2>
+                <ul>
+                    <li class="fragment fade-up"><strong>📊 Dashboard:</strong> View incoming orders in real-time.</li>
+                    <li class="fragment fade-up"><strong>👨‍🍳 Prepare:</strong> Accept and cook orders efficiently.</li>
+                    <li class="fragment fade-up"><strong>✅ Notify:</strong> Mark orders as "Ready" for pickup.</li>
+                </ul>
+            </section>
+
+            <!-- Slide 6: Technology -->
+            <section data-transition="concave" data-auto-animate>
+                <h2>Technology <span class="highlight">Stack</span></h2>
+                <ul>
+                    <li class="fragment highlight-blue">⚛️ <strong>Frontend:</strong> React + Vite & Tailwind CSS</li>
+                    <li class="fragment highlight-green">🐍 <strong>Backend:</strong> Python FastAPI</li>
+                    <li class="fragment highlight-red">🔥 <strong>Database:</strong> Firebase Auth & Firestore</li>
+                    <li class="fragment highlight-blue">💳 <strong>Payments:</strong> Razorpay Integration</li>
+                </ul>
+            </section>
+
+            <!-- Slide 7: Conclusion -->
+            <section data-transition="zoom" data-auto-animate>
+                <h2>Why Campus<span class="highlight">Q</span>?</h2>
+                <ul>
+                    <li class="fragment grow">Saves precious time for students</li>
+                    <li class="fragment grow">Increases sales & efficiency for canteens</li>
+                    <li class="fragment grow">Modernizes the campus experience</li>
+                </ul>
+                <h3 class="fragment fade-up" style="margin-top: 40px; color: #50fa7b;">Thank You!</h3>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.js"></script>
+    <script>
+        Reveal.initialize({
+            controls: true,
+            progress: true,
+            center: true,
+            hash: true,
+            transition: 'slide', // none/fade/slide/convex/concave/zoom
+            autoAnimateEasing: 'ease-out',
+            autoAnimateDuration: 0.8,
+            autoAnimateUnmatched: false
+        });
+    </script>
+</body>
+</html>

@@ -33,10 +33,25 @@ export function AuthProvider({ children }) {
           setLoading(false);
         }
       })
-      .catch(error => {
-        console.error("Error fetching user profile", error);
+      .catch(async error => {
+        console.error("Error fetching user profile from API, falling back to Firestore", error);
+        try {
+          const { getFirestore, doc, getDoc } = await import('firebase/firestore');
+          const { app } = await import('../lib/firebase.js');
+          const db = getFirestore(app);
+          const docRef = doc(db, 'users', user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists() && isMounted) {
+             setProfile(docSnap.data());
+             setLoading(false);
+             return;
+          }
+        } catch (fbError) {
+             console.error("Error fetching from Firestore", fbError);
+        }
+        
         if (isMounted) {
-          setProfile(null);
+          setProfile({ role: 'student' }); // fallback to student if all fails
           setLoading(false);
         }
       });

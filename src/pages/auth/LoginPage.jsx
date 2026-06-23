@@ -22,7 +22,12 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, form.email, form.password);
       notify('Logged in successfully');
-      window.setTimeout(() => navigate(`/${profile?.role || form.role}`), 200);
+      window.setTimeout(() => {
+        const role = profile?.role || form.role;
+        if (role === 'student') navigate('/student/menu');
+        else if (role === 'canteen') navigate('/canteen/orders');
+        else navigate(`/${role}`);
+      }, 200);
     } catch (error) {
       notify(getAuthErrorMessage(error), 'error');
     } finally {
