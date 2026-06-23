@@ -34,7 +34,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    await api.post('/orders', {
+    const orderData = {
       studentId: user.uid,
       studentName: profile?.name || user.email,
       studentEmail: user.email,
@@ -49,7 +49,25 @@ export default function CheckoutPage() {
       total,
       createdAt: new Date().toISOString(),
       timestamp: Date.now()
-    });
+    };
+
+    try {
+      await api.post('/orders', orderData);
+    } catch (error) {
+      console.error("API failed, falling back to Firestore", error);
+      try {
+        const { getFirestore, collection, addDoc, serverTimestamp } = await import('firebase/firestore');
+        const { app } = await import('../../lib/firebase.js');
+        const db = getFirestore(app);
+        orderData.createdAt = serverTimestamp();
+        await addDoc(collection(db, 'orders'), orderData);
+      } catch (fbError) {
+        console.error("Firestore fallback failed", fbError);
+        notify("Failed to place order. Please try again.", "error");
+        setLoading(false);
+        return;
+      }
+    }
 
     clearCart();
     setConfirmed(true);
